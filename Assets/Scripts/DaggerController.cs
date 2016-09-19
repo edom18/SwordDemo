@@ -6,16 +6,21 @@ using System.Collections;
 /// </summary>
 public class DaggerController : MonoBehaviour
 {
-    public GameObject Target;
     public GameObject DaggerFunnelPrefab;
+    GameObject _target;
     GameObject _funnelDagger;
 
     SteamVR_TrackedObject _trackedObject;
 
     float _motionThreshold = 0.6f;
     float _slashLimit = 300f;
+    float _offsetScale = 0.4f;
+    float _smoothTime = 0.8f;
 
     bool _isTargetting = false;
+
+
+    Vector3 _moveVelocity;
 
     Vector3 _prevPosition = Vector3.zero;
     Vector3 _prevVelocity = Vector3.zero;
@@ -30,6 +35,11 @@ public class DaggerController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        if (_target == null)
+        {
+            return;
+        }
+
         var device = SteamVR_Controller.Input((int)_trackedObject.index);
         if (device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
         {
@@ -53,10 +63,15 @@ public class DaggerController : MonoBehaviour
 
         if (CheckSlach())
         {
-            Debug.Log("Slash!!!!");
+            var funnel = _funnelDagger.GetComponent<FunnelDagger>();
+            funnel.Attack();
         }
 	}
 
+    /// <summary>
+    /// 剣を振ったかのチェック
+    /// </summary>
+    /// <returns></returns>
     bool CheckSlach()
     {
         float power = _acc.magnitude;
@@ -94,6 +109,30 @@ public class DaggerController : MonoBehaviour
     /// ターゲットするかの計算
     /// </summary>
     void CalcTarget()
+    {
+        if (_isTargetting)
+        {
+            CalcTargetInTargetting();
+        }
+        else
+        {
+            CalcTargetOutTargetting();
+        }
+    }
+
+    /// <summary>
+    /// ターゲットを確定後の場合の計算
+    /// </summary>
+    void CalcTargetInTargetting()
+    {
+        //var dot = Vector3.Dot(transform.forward, Vector3.up);
+        CalcTargetOutTargetting();
+    }
+
+    /// <summary>
+    /// ターゲット確定前の計算
+    /// </summary>
+    void CalcTargetOutTargetting()
     {
         var dot = Vector3.Dot(transform.forward, Vector3.up);
         if (dot >= _motionThreshold)
@@ -133,6 +172,43 @@ public class DaggerController : MonoBehaviour
         var gameView = transform.parent.GetComponentInChildren<SteamVR_GameView>();
         _funnelDagger.transform.position = gameView.transform.position + gameView.transform.forward;
         _funnelDagger.transform.rotation = gameView.transform.rotation;
+
+        //_funnelDagger.transform.position = _target.transform.position - _target.transform.forward * 0.5f;
+        //_funnelDagger.transform.rotation = _target.transform.rotation;
+
+        MoveToTarget();
+    }
+
+    /// <summary>
+    /// ファンネルのターゲットの位置を取得する
+    /// </summary>
+    /// <returns></returns>
+    Vector3 GetTargetPosition()
+    {
+        return _target.transform.position - _target.transform.forward * _offsetScale;
+    }
+
+    /// <summary>
+    /// ファンネルを指定の位置に移動させる
+    /// </summary>
+    /// <param name="position"></param>
+    void MoveToTarget()
+    {
+        if (_target == null)
+        {
+            return;
+        }
+
+        StartCoroutine(MoveTo(GetTargetPosition()));
+    }
+
+    IEnumerator MoveTo(Vector3 position)
+    {
+        while (_funnelDagger.transform.position != position && _funnelDagger != null)
+        {
+            yield return 0;
+            _funnelDagger.transform.position = Vector3.SmoothDamp(_funnelDagger.transform.position, position, ref _moveVelocity, _smoothTime);
+        }
     }
 
     void Targetting(bool enable)
@@ -143,7 +219,7 @@ public class DaggerController : MonoBehaviour
         }
 
         var funnel = _funnelDagger.GetComponent<FunnelDagger>();
-        funnel.SetTarget(enable ? Target : null);
+        funnel.SetTarget(enable ? _target : null);
     }
 
     void DestroyDagger()
@@ -159,5 +235,15 @@ public class DaggerController : MonoBehaviour
         _prevPosition = Vector3.zero;
         _prevVelocity = Vector3.zero;
         _acc = Vector3.zero;
+    }
+
+    public void SetTarget(GameObject target)
+    {
+        _target = target;
+
+        if (_funnelDagger)
+        {
+            MoveToTarget();
+        }
     }
 }

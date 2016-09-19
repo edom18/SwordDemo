@@ -13,17 +13,13 @@ public class FunnelDagger : MonoBehaviour
     GameObject _target;
     GameObject[] _daggers;
 
+    bool _isAttacking = false;
+
 	// Use this for initialization
 	void Start ()
     {
         _daggers = new GameObject[FunnelCount];
         SetupDaggers();
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	
 	}
 
     /// <summary>
@@ -40,6 +36,27 @@ public class FunnelDagger : MonoBehaviour
             dagger.transform.localPosition = dagger.transform.up * FunnelRadius;
 
             _daggers[i] = dagger;
+        }
+    }
+
+    /// <summary>
+    /// 攻撃を開始
+    /// </summary>
+    public void Attack()
+    {
+        Debug.Log("Attack!!");
+
+        if (_isAttacking)
+        {
+            return;
+        }
+
+        _isAttacking = true;
+
+        foreach(var dagger in _daggers)
+        {
+            var mover = dagger.GetComponentInChildren<MoveDagger>();
+            mover.MoveTo(_target.transform.position);
         }
     }
 
@@ -75,6 +92,11 @@ public class FunnelDagger : MonoBehaviour
 
     void CancelLookAtTarget()
     {
+        if (_isAttacking)
+        {
+            return;
+        }
+
         foreach(var dagger in _daggers)
         {
             var lookAt = dagger.GetComponentInChildren<LookAtDagger>();

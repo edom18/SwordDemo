@@ -15,18 +15,6 @@ public class LookAtDagger : MonoBehaviour
     {
         _originalRotation = transform.rotation;
 	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-        //if (_target == null)
-        //{
-        //    return;
-        //}
-
-        //transform.LookAt(_target.transform);
-        //LookAt();
-    }
 
     void LookAt()
     {

@@ -5,8 +5,6 @@ public class DaggerDebug : MonoBehaviour
 {
     public GameObject Target;
 
-    bool _isTargetting = false;
-
 	// Use this for initialization
 	void Start () {
 	
@@ -15,20 +13,10 @@ public class DaggerDebug : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKey(KeyCode.T))
         {
-            if (!_isTargetting)
-            {
-                _isTargetting = true;
-                var funnel = FindObjectOfType<FunnelDagger>();
-                funnel.SetTarget(Target);
-            }
-            else
-            {
-                _isTargetting = false;
-                var funnel = FindObjectOfType<FunnelDagger>();
-                funnel.SetTarget(null);
-            }
+            var newPos = Vector3.MoveTowards(Target.transform.position, Vector3.zero, Time.deltaTime);
+            Target.transform.position = newPos;
         }
 	}
 }
