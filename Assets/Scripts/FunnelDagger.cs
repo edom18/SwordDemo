@@ -43,10 +43,8 @@ public class FunnelDagger : MonoBehaviour
         }
     }
 
-    IEnumerator AttackImpl()
+    IEnumerator AttackImpl(Vector3 target)
     {
-        Vector3 target = _target.transform.position;
-
         foreach(var dagger in _daggers)
         {
             yield return new WaitForSeconds(_attackInterval);
@@ -59,7 +57,7 @@ public class FunnelDagger : MonoBehaviour
     /// <summary>
     /// 攻撃を開始
     /// </summary>
-    public void Attack()
+    public void Attack(Vector3 target)
     {
         Debug.Log("Attack!!");
 
@@ -71,7 +69,7 @@ public class FunnelDagger : MonoBehaviour
         _isAttacking = true;
         IsAttacked = true;
 
-        StartCoroutine(AttackImpl());
+        StartCoroutine(AttackImpl(target));
     }
 
     /// <summary>

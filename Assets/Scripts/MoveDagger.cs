@@ -4,19 +4,7 @@ using System.Collections;
 public class MoveDagger : MonoBehaviour
 {
     [SerializeField]
-    float _moveSpeed = 5f;
-
-	// Use this for initialization
-	void Start ()
-    {
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-	
-	}
+    float _moveSpeed = 8f;
 
     public void MoveTo(Vector3 targetPos)
     {

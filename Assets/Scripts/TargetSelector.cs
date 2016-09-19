@@ -20,11 +20,12 @@ public class TargetSelector : MonoBehaviour
             return;
         }
 
-        Debug.DrawRay(transform.position, transform.forward * 2f, Color.red);
+        Debug.DrawRay(transform.position, transform.forward * 10f, Color.red);
 
         var radius = 1f;
+        int layer = 1 << 8;
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position, radius, transform.forward, out hit))
+        if (Physics.SphereCast(transform.position, radius, transform.forward, out hit, float.MaxValue, layer))
         {
             if (hit.collider.CompareTag("Enemy"))
             {

@@ -9,12 +9,13 @@ public class DaggerController : MonoBehaviour
     public GameObject DaggerFunnelPrefab;
     GameObject _target;
     GameObject _funnelDagger;
+    Vector3 _targetPosition;
 
     SteamVR_TrackedObject _trackedObject;
 
     float _motionThreshold = 0.6f;
     float _slashLimit = 300f;
-    float _offsetScale = 0.4f;
+    float _offsetScale = 1.0f;
     float _smoothTime = 0.8f;
 
     bool _isTargetting = false;
@@ -64,7 +65,7 @@ public class DaggerController : MonoBehaviour
         if (CheckSlach())
         {
             var funnel = _funnelDagger.GetComponent<FunnelDagger>();
-            funnel.Attack();
+            funnel.Attack(_targetPosition);
         }
 	}
 
@@ -185,7 +186,7 @@ public class DaggerController : MonoBehaviour
     /// <returns></returns>
     Vector3 GetTargetPosition()
     {
-        return _target.transform.position - _target.transform.forward * _offsetScale;
+        return _targetPosition + _target.transform.forward * _offsetScale;
     }
 
     /// <summary>
@@ -254,6 +255,14 @@ public class DaggerController : MonoBehaviour
         {
             return;
         }
+
+        if (_target == null)
+        {
+            return;
+        }
+
+        var renderer = _target.GetComponentInChildren<Renderer>();
+        _targetPosition = renderer.bounds.center;
 
         MoveToTarget();
     }
