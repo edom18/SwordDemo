@@ -13,8 +13,13 @@ public class DaggerController : MonoBehaviour
     SteamVR_TrackedObject _trackedObject;
 
     float _motionThreshold = 0.6f;
+    float _slashLimit = 300f;
 
     bool _isTargetting = false;
+
+    Vector3 _prevPosition = Vector3.zero;
+    Vector3 _prevVelocity = Vector3.zero;
+    Vector3 _acc = Vector3.zero;
 
 	// Use this for initialization
 	void Start ()
@@ -29,12 +34,67 @@ public class DaggerController : MonoBehaviour
         if (device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
         {
             GenerateDagger();
+            return;
         }
         if (device.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))
         {
             DestroyDagger();
+            return;
         }
 
+        if (_funnelDagger == null)
+        {
+            return;
+        }
+
+        // ターゲットすべきかの計算
+        CalcTarget();
+        CalcAcc();
+
+        if (CheckSlach())
+        {
+            Debug.Log("Slash!!!!");
+        }
+	}
+
+    bool CheckSlach()
+    {
+        float power = _acc.magnitude;
+        bool slashing = (power >= _slashLimit &&
+                         _isTargetting);
+        return slashing;
+    }
+
+    /// <summary>
+    /// 加速度の計算
+    /// </summary>
+    void CalcAcc()
+    {
+        if (_prevPosition == Vector3.zero)
+        {
+            _prevPosition = transform.position;
+            return;
+        }
+
+        var velocity = (transform.position - _prevPosition) / Time.deltaTime;
+        if (_prevVelocity == Vector3.zero)
+        {
+            _prevVelocity = velocity;
+            return;
+        }
+
+        var acc = (velocity - _prevVelocity) / Time.deltaTime;
+        _acc += acc;
+
+        _prevPosition = transform.position;
+        _prevVelocity = velocity;
+    }
+
+    /// <summary>
+    /// ターゲットするかの計算
+    /// </summary>
+    void CalcTarget()
+    {
         var dot = Vector3.Dot(transform.forward, Vector3.up);
         if (dot >= _motionThreshold)
         {
@@ -56,7 +116,7 @@ public class DaggerController : MonoBehaviour
             _isTargetting = false;
             Targetting(false);
         }
-	}
+    }
 
     /// <summary>
     /// ダガーを生成する
@@ -95,5 +155,9 @@ public class DaggerController : MonoBehaviour
 
         Destroy(_funnelDagger);
         _funnelDagger = null;
+
+        _prevPosition = Vector3.zero;
+        _prevVelocity = Vector3.zero;
+        _acc = Vector3.zero;
     }
 }
