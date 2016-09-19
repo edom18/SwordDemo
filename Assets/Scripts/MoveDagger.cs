@@ -4,7 +4,7 @@ using System.Collections;
 public class MoveDagger : MonoBehaviour
 {
     [SerializeField]
-    float _moveSpeed = 2f;
+    float _moveSpeed = 5f;
 
 	// Use this for initialization
 	void Start ()

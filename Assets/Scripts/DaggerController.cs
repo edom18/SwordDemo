@@ -204,9 +204,13 @@ public class DaggerController : MonoBehaviour
 
     IEnumerator MoveTo(Vector3 position)
     {
-        while (_funnelDagger.transform.position != position && _funnelDagger != null)
+        while (_funnelDagger.transform.position != position)
         {
             yield return 0;
+            if (_funnelDagger == null)
+            {
+                break;
+            }
             _funnelDagger.transform.position = Vector3.SmoothDamp(_funnelDagger.transform.position, position, ref _moveVelocity, _smoothTime);
         }
     }

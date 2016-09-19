@@ -14,6 +14,7 @@ public class FunnelDagger : MonoBehaviour
     GameObject[] _daggers;
 
     bool _isAttacking = false;
+    float _attackInterval = 0.02f;
 
 	// Use this for initialization
 	void Start ()
@@ -39,6 +40,19 @@ public class FunnelDagger : MonoBehaviour
         }
     }
 
+    IEnumerator AttackImpl()
+    {
+        Vector3 target = _target.transform.position;
+
+        foreach(var dagger in _daggers)
+        {
+            yield return new WaitForSeconds(_attackInterval);
+
+            var mover = dagger.GetComponentInChildren<MoveDagger>();
+            mover.MoveTo(target);
+        }
+    }
+
     /// <summary>
     /// 攻撃を開始
     /// </summary>
@@ -53,11 +67,7 @@ public class FunnelDagger : MonoBehaviour
 
         _isAttacking = true;
 
-        foreach(var dagger in _daggers)
-        {
-            var mover = dagger.GetComponentInChildren<MoveDagger>();
-            mover.MoveTo(_target.transform.position);
-        }
+        StartCoroutine(AttackImpl());
     }
 
     /// <summary>
