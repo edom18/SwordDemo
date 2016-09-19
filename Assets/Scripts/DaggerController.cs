@@ -12,7 +12,7 @@ public class DaggerController : MonoBehaviour
 
     SteamVR_TrackedObject _trackedObject;
 
-    float _motionThreshold = 0.9f;
+    float _motionThreshold = 0.6f;
 
     bool _isTargetting = false;
 
@@ -77,6 +77,11 @@ public class DaggerController : MonoBehaviour
 
     void Targetting(bool enable)
     {
+        if (_funnelDagger == null)
+        {
+            return;
+        }
+
         var funnel = _funnelDagger.GetComponent<FunnelDagger>();
         funnel.SetTarget(enable ? Target : null);
     }
