@@ -245,9 +245,16 @@ public class DaggerController : MonoBehaviour
     {
         _target = target;
 
-        if (_funnelDagger)
+        if (_funnelDagger == null)
         {
-            MoveToTarget();
+            return;
         }
+
+        if (_funnelDagger.GetComponent<FunnelDagger>().IsAttacked)
+        {
+            return;
+        }
+
+        MoveToTarget();
     }
 }

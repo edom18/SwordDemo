@@ -13,6 +13,8 @@ public class FunnelDagger : MonoBehaviour
     GameObject _target;
     GameObject[] _daggers;
 
+    public bool IsAttacked { get; private set; }
+
     bool _isAttacking = false;
     float _attackInterval = 0.02f;
 
@@ -21,6 +23,7 @@ public class FunnelDagger : MonoBehaviour
     {
         _daggers = new GameObject[FunnelCount];
         SetupDaggers();
+        IsAttacked = false;
 	}
 
     /// <summary>
@@ -66,6 +69,7 @@ public class FunnelDagger : MonoBehaviour
         }
 
         _isAttacking = true;
+        IsAttacked = true;
 
         StartCoroutine(AttackImpl());
     }
