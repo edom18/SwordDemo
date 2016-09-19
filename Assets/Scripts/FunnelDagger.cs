@@ -45,11 +45,14 @@ public class FunnelDagger : MonoBehaviour
 
     IEnumerator AttackImpl(Vector3 target)
     {
+        Transform parent = _target.transform.FindChild("Hips");
+
         foreach(var dagger in _daggers)
         {
             yield return new WaitForSeconds(_attackInterval);
 
             var mover = dagger.GetComponentInChildren<MoveDagger>();
+            dagger.transform.parent = parent;
             mover.MoveTo(target);
         }
     }
